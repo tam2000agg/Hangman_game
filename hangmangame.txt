@@ -1,0 +1,207 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include<iostream>
+#include<vector>
+#include<string>
+#include<fstream>
+#include <cstdlib>
+#include<time.h>
+using namespace std;
+void printmessage(string message,bool printop=true,bool printbottom=true)
+{
+    if(printop)
+    {
+        cout<<"+------------------------------+"<<endl;
+        cout<<"|";
+    }
+    else
+    {
+       cout<<"|";
+    }
+    bool front=true;
+    for(int i=message.length();i<30;i++)
+    {
+
+        if(front)
+        {
+
+            message=" "+message;
+        }
+        else
+        {
+
+            message=message+" ";
+        }
+        front=!front;
+    }
+    cout<<message;
+    if(printbottom)
+    {
+        cout<<"|"<<endl;
+         cout<<"+------------------------------+"<<endl;
+
+    }
+
+    else
+    {
+       cout<<"|"<<endl;
+    }
+}
+void hangman(int count=0)
+{
+    if(count>=1)
+        printmessage("|",false,false);
+    else
+        printmessage("",false,false);
+         if(count>=2)
+        printmessage("|",false,false);
+    else
+        printmessage("",false,false);
+         if(count>=3)
+        printmessage("o",false,false);
+    else
+        printmessage("",false,false);
+        if(count==4)
+        printmessage("/  ",false,false);
+        if(count==5)
+        printmessage("/| ",false,false);
+        if(count>=6)
+        printmessage("/|\\",false,false);
+        else
+            printmessage("",false,false);
+         if(count>=7)
+        printmessage("|",false,false);
+        else
+            printmessage("",false,false);
+
+              if(count==8)
+        printmessage("/  ",false,false);
+             if(count>=9)
+        printmessage("/ \\",false,false);
+        else
+            printmessage("",false,false);
+}
+void printletters(string input,char from,char to)
+{
+    string s;
+    for(char i=from;i<=to;i++)
+    {
+        if(input.find(i)==string::npos)
+        {
+            s += i;
+            s += " ";
+        }
+        else
+        {
+            s += " ";
+        }
+    }
+    printmessage(s,false,false);
+}
+void printavailable(string taken)
+{
+     printmessage("AVAILABLE LETTERS");
+     printletters(taken,'a','m');
+     printletters(taken,'n','z');
+}
+bool wordandcheck(string word,string guess)
+{
+    printmessage("GUESS THE WORD");
+    bool win=true;
+    string s;
+    for(int j=0;j<word.length();j++)
+    {
+        if(guess.find(word[j])==string::npos)
+        {
+            win=false;
+            s +="_ ";
+
+        }
+        else
+        {
+            s += word[j];
+            s += " ";
+        }
+    }
+    printmessage(s,false);
+    return win;
+
+}
+string loadrandomword(string path)
+{
+
+    int linecount=0;
+    string word;
+    vector<string> v;
+    ifstream reader(path.c_str());
+    if(reader.is_open())
+    {
+        while(std::getline(reader,word))
+        {
+            v.push_back(word);
+
+        }
+        int randomline=rand() % v.size();
+        word=v.at(randomline);
+    }
+    reader.close();
+    return word;
+}
+int triesleft(string word,string guess)
+{
+    int error=0;
+    for(int i=0;i<guess.length();i++)
+    {
+        if(word.find(guess[i])==string::npos)
+        {
+            error++;
+        }
+    }
+    return error;
+}
+int main()
+{
+    srand(time(0));
+    string guesses;
+    string wordtoguess;
+    wordtoguess="cow";
+    int tries=0;
+    bool won=false;
+    do
+    {
+         system("clear");
+         printmessage("HANGMAN");
+         hangman(tries);
+         printavailable(guesses);
+        won=wordandcheck(wordtoguess,guesses);
+        if(won)
+            break;
+        char x;
+        cout<<">";
+        cin>>x;
+        if(guesses.find(x)==string::npos)
+        {
+            guesses += x;
+            cout<<""<<guesses<<"\n";
+        }
+        tries=triesleft(wordtoguess,guesses);
+        if(tries==9)
+        {
+            hangman(9);
+        }
+    }while(tries<9);
+     if(won)
+        printmessage("YOU WON");
+     else
+        printmessage("GAME OVER");
+        printmessage(wordtoguess);
+
+
+    return 0;
+}
